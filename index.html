@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite-project/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>系统启动中</title>
+
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        min-height: 100vh;
+        background: #f9fafb;
+        color: #4b5563;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      }
+
+      /* ✅ 根节点永远全宽全高 */
+      #root {
+        width: 100%;
+        min-height: 100vh;
+      }
+
+      /* ✅ 启动遮罩：覆盖全屏 */
+      #boot-loading {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: #f9fafb;
+        z-index: 9999;
+
+        /* 初始淡入 */
+        opacity: 0;
+        transform: translateY(4px);
+        transition: opacity 280ms ease, transform 280ms ease;
+        pointer-events: none; /* 避免阻塞（淡入完成前也不影响） */
+      }
+
+      /* ✅ 淡入完成状态 */
+      #boot-loading.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ✅ 触发淡出 */
+      #boot-loading.is-hiding {
+        opacity: 0;
+        transform: translateY(-2px);
+      }
+
+      .loading-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(6px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      }
+
+      .loading-spinner {
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        border: 2px solid #e5e7eb;
+        border-top-color: #1f2937;
+        animation: spin 800ms linear infinite;
+      }
+
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* ✅ 尊重“减少动效”用户偏好 */
+      @media (prefers-reduced-motion: reduce) {
+        #boot-loading,
+        .loading-spinner {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+    </style>
+    <script type="module" crossorigin src="/vite-project/assets/index-DqGuP_Wx.js"></script>
+    <link rel="stylesheet" crossorigin href="/vite-project/assets/index-ES5d5J8j.css">
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <!-- ✅ 启动遮罩独立存在，不让 root 变窄 -->
+    <div id="boot-loading" aria-live="polite" aria-busy="true">
+      <div class="loading-container">
+        <div class="loading-spinner" aria-hidden="true"></div>
+        <div>系统启动中...</div>
+      </div>
+    </div>
+
+
+    <!-- ✅ 让遮罩先淡入（在 React 开始执行前就生效） -->
+    <script>
+      // 下一帧再加 class，触发 transition
+      requestAnimationFrame(() => {
+        const el = document.getElementById("boot-loading");
+        if (el) el.classList.add("is-visible");
+      });
+    </script>
+  </body>
+</html>
